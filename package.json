@@ -1,0 +1,16 @@
+{
+    "name": "transgirls.love",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "packageManager": "pnpm@10.32.1",
+    "dependencies": {
+        "express": "^5.2.1"
+    }
+}
