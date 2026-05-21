@@ -2,6 +2,10 @@ html {
     font-size: clamp(15px, 1vw, 18px);
 }
 
+::selection {
+    background: rgba(255, 182, 193, 0.45);
+}
+
 html,
 body {
     width: 100%;
@@ -13,18 +17,29 @@ body {
 body {
     font-family: "Source Code Pro", monospace;
     overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
-/* ── hero ─────────────────────────────────────────────── */
+/* ── layout ──────────────────────────────────────────── */
 
-.hero {
-    min-height: 100vh;
+.page-layout {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 6rem;
+    padding: 2rem;
+}
+
+.sticker-side {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
     gap: 1.25rem;
-    padding: 30vh 1.5rem 3rem;
+    flex-shrink: 0;
 }
 
 .social-links {
@@ -46,7 +61,7 @@ body {
 }
 
 .descriptor-line {
-    width: min(42.5rem, calc(100vw - 3rem));
+    width: 450px;
     margin: 0;
     text-align: center;
     font-size: 0.75rem;
@@ -67,20 +82,13 @@ body {
 }
 
 .scroll-note {
-    margin: 0;
-    font-weight: 700;
-}
-
-.scroll-mark {
-    font-style: italic;
+    display: none;
 }
 
 /* ── content ──────────────────────────────────────────── */
 
-.content {
-    max-width: min(75rem, 90vw);
-    margin: 0 auto;
-    padding: 2.75rem 1.5rem 20rem;
+.about-side {
+    max-width: 28rem;
 }
 
 .content-title {
@@ -166,8 +174,13 @@ body {
     opacity: 0.7;
 }
 
-@media (max-width: 600px) {
-    .content-body {
+@media (max-width: 700px) {
+    .page-layout {
         flex-direction: column;
+        padding: 2rem 1.5rem;
+    }
+
+    .about-side {
+        max-width: 100%;
     }
 }
