@@ -26,9 +26,7 @@ body {
 .page-layout {
     display: grid;
     grid-template-columns: auto auto;
-    grid-template-areas:
-        "stickers about"
-        "fastfetch fastfetch";
+    grid-template-areas: "stickers about";
     align-items: start;
     justify-content: center;
     gap: 6rem;
@@ -91,35 +89,6 @@ body {
     grid-area: about;
     max-width: 28rem;
     align-self: end;
-}
-
-.fastfetch-side {
-    grid-area: fastfetch;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    justify-self: stretch;
-    align-self: center;
-}
-
-.fastfetch-wrap {
-    width: fit-content;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.fastfetch-title {
-    margin: 0 0 0.75rem;
-    font-size: clamp(1rem, 1.4vw, 1.35rem);
-    line-height: 1.1;
-    text-align: center;
-}
-
-.fastfetch-side img {
-    display: block;
-    width: min(100%, 32.5rem);
-    height: auto;
 }
 
 .content-title {
@@ -208,8 +177,7 @@ body {
         grid-template-columns: 1fr;
         grid-template-areas:
             "stickers"
-            "about"
-            "fastfetch";
+            "about";
         gap: 2rem;
         padding: 2rem 1.5rem;
     }
