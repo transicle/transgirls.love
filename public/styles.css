@@ -90,7 +90,7 @@ body {
 .about-side {
     grid-area: about;
     max-width: 28rem;
-    margin-top: 10px;
+    align-self: end;
 }
 
 .fastfetch-side {
@@ -216,5 +216,6 @@ body {
 
     .about-side {
         max-width: 100%;
+        align-self: start;
     }
 }
