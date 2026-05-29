@@ -26,15 +26,19 @@ body {
 /* ── layout ──────────────────────────────────────────── */
 
 .page-layout {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-areas:
+        "stickers about"
+        "fastfetch fastfetch";
+    align-items: start;
     justify-content: center;
     gap: 6rem;
     padding: 2rem;
 }
 
 .sticker-side {
+    grid-area: stickers;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -88,7 +92,19 @@ body {
 /* ── content ──────────────────────────────────────────── */
 
 .about-side {
+    grid-area: about;
     max-width: 28rem;
+}
+
+.fastfetch-side {
+    grid-area: fastfetch;
+    justify-self: center;
+}
+
+.fastfetch-side img {
+    display: block;
+    width: min(100%, 32.5rem);
+    height: auto;
 }
 
 .content-title {
@@ -176,7 +192,12 @@ body {
 
 @media (max-width: 700px) {
     .page-layout {
-        flex-direction: column;
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "stickers"
+            "about"
+            "fastfetch";
+        gap: 2rem;
         padding: 2rem 1.5rem;
     }
 
