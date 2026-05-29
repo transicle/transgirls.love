@@ -1,4 +1,1 @@
-# transgirls.love
-I love you, dear reader! :3
-
-<img width="726" height="423" alt="image" src="https://github.com/user-attachments/assets/8a4d5f34-d366-4ce0-b746-eb034c1bc470" />
+<img width="1624" height="982" alt="image" src="https://github.com/user-attachments/assets/527730f0-ca37-4ba3-b1b5-3129ed4dcf02" />
