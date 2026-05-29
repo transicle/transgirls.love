@@ -23,8 +23,6 @@ body {
     min-height: 100vh;
 }
 
-/* ── layout ──────────────────────────────────────────── */
-
 .page-layout {
     display: grid;
     grid-template-columns: auto auto;
@@ -89,8 +87,6 @@ body {
     display: none;
 }
 
-/* ── content ──────────────────────────────────────────── */
-
 .about-side {
     grid-area: about;
     max-width: 28rem;
@@ -98,7 +94,18 @@ body {
 
 .fastfetch-side {
     grid-area: fastfetch;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     justify-self: center;
+}
+
+.fastfetch-title {
+    margin: 0 0 0.75rem;
+    font-size: clamp(1rem, 1.4vw, 1.35rem);
+    line-height: 1.1;
 }
 
 .fastfetch-side img {
@@ -129,8 +136,6 @@ body {
     line-height: 1.7;
     word-break: break-word;
 }
-
-/* ── project cards ────────────────────────────────────── */
 
 .projects {
     flex: 1;
