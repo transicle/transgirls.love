@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>88x31 Gallery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/pages/88x31/styles.css" />
+</head>
+
+<body>
+    <main class="gallery-page">
+        <section class="controls" aria-label="Pagination controls">
+            <button id="prev-btn" type="button">&#8592;</button>
+            <button id="next-btn" type="button">&#8594;</button>
+        </section>
+
+        <section id="gallery-grid" class="gallery-grid" aria-label="88x31 image gallery"></section>
+    </main>
+
+    <script>
+        (function () {
+            const MIN_PAGE = 1;
+            const MAX_PAGE = 164;
+
+            const galleryGrid = document.getElementById('gallery-grid');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+
+            function getPageFromQuery() {
+                const params = new URLSearchParams(window.location.search);
+                const page = Number.parseInt(params.get('page') || String(MIN_PAGE), 10);
+
+                if (Number.isNaN(page)) return MIN_PAGE;
+                return Math.min(MAX_PAGE, Math.max(MIN_PAGE, page));
+            }
+
+            function setPageInQuery(page) {
+                const url = new URL(window.location.href);
+                url.searchParams.set('page', String(page));
+                window.history.replaceState({}, '', url);
+            }
+
+            function getMarkdownUrl(page) {
+                return 'https://raw.githubusercontent.com/transicle/88x31/main/gallery/GALLERY_' + page + '.md';
+            }
+
+            function normalizeImageUrl(rawUrl) {
+                const trimmed = rawUrl.trim();
+
+                if (/^https?:\/\//i.test(trimmed)) {
+                    return trimmed;
+                }
+
+                const withoutRelativePrefix = trimmed.replace(/^\.\//, '').replace(/^(\.\.\/)+/, '');
+                return 'https://raw.githubusercontent.com/transicle/88x31/main/' + withoutRelativePrefix;
+            }
+
+            function extractImageUrls(markdown) {
+                const urls = [];
+                const seen = new Set();
+
+                const markdownImageRegex = /!\[[^\]]*\]\(([^)\s]+)\)/g;
+                let match;
+                while ((match = markdownImageRegex.exec(markdown)) !== null) {
+                    const url = normalizeImageUrl(match[1]);
+                    if (!seen.has(url)) {
+                        seen.add(url);
+                        urls.push(url);
+                    }
+                }
+
+                const htmlImageRegex = /<img[^>]*\ssrc=["']([^"']+)["'][^>]*>/gi;
+                while ((match = htmlImageRegex.exec(markdown)) !== null) {
+                    const url = normalizeImageUrl(match[1]);
+                    if (!seen.has(url)) {
+                        seen.add(url);
+                        urls.push(url);
+                    }
+                }
+
+                return urls;
+            }
+
+            function renderImages(imageUrls, page) {
+                galleryGrid.innerHTML = '';
+
+                if (imageUrls.length === 0) {
+                    const empty = document.createElement('p');
+                    empty.className = 'empty-state';
+                    empty.textContent = 'No images found in GALLERY_' + page + '.md';
+                    galleryGrid.appendChild(empty);
+                    return;
+                }
+
+                const faces = [':3', '>_<', '>////<', '>~<', '(O.O)', '^v^', 'OwO', '>-<', 'UwU', '>w<', '^_^', '(>.<)'];
+                const batch = imageUrls.slice(0, 500);
+                let i = 0;
+
+                function appendNext() {
+                    if (i >= batch.length) return;
+                    const url = batch[i++];
+                    const image = document.createElement('img');
+                    image.className = 'badge-image';
+                    image.src = url;
+                    image.alt = faces[Math.floor(Math.random() * faces.length)];
+                    image.loading = 'lazy';
+                    image.decoding = 'async';
+                    galleryGrid.appendChild(image);
+                    requestAnimationFrame(appendNext);
+                }
+
+                requestAnimationFrame(appendNext);
+            }
+
+            async function loadPage(page) {
+                prevBtn.disabled = true;
+                nextBtn.disabled = true;
+                setPageInQuery(page);
+
+                try {
+                    const response = await fetch(getMarkdownUrl(page));
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch page ' + page + '.');
+                    }
+                    const markdown = await response.text();
+                    const imageUrls = extractImageUrls(markdown);
+                    renderImages(imageUrls, page);
+                } catch (error) {
+                    galleryGrid.innerHTML = '';
+                    const errorMessage = document.createElement('p');
+                    errorMessage.className = 'error-state';
+                    errorMessage.textContent = error.message;
+                    galleryGrid.appendChild(errorMessage);
+                } finally {
+                    prevBtn.disabled = page <= MIN_PAGE;
+                    nextBtn.disabled = page >= MAX_PAGE;
+                }
+            }
+
+            function init() {
+                let currentPage = getPageFromQuery();
+
+                prevBtn.addEventListener('click', () => {
+                    if (currentPage <= MIN_PAGE) return;
+                    currentPage -= 1;
+                    loadPage(currentPage);
+                });
+
+                nextBtn.addEventListener('click', () => {
+                    if (currentPage >= MAX_PAGE) return;
+                    currentPage += 1;
+                    loadPage(currentPage);
+                });
+
+                loadPage(currentPage);
+            }
+
+            init();
+        })();
+    </script>
+</body>
+
+</html>
