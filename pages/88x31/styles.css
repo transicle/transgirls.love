@@ -60,6 +60,7 @@ button:disabled {
     align-items: flex-start;
     justify-content: center;
     gap: 2px;
+    width: 100%;
 }
 
 .badge-image {
