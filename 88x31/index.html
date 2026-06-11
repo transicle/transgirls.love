@@ -5,6 +5,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>88x31 Gallery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/pages/88x31/styles.css" />
 </head>
 
@@ -28,7 +31,6 @@
         (function () {
             const MIN_PAGE = 1;
             const MAX_PAGE = 164;
-            const CACHE_BATCH_SIZE = 60;
 
             const statusText = document.getElementById('status-text');
             const galleryGrid = document.getElementById('gallery-grid');
@@ -36,30 +38,6 @@
             const nextBtn = document.getElementById('next-btn');
             const pageInput = document.getElementById('page-input');
             const jumpForm = document.getElementById('jump-form');
-
-            const markdownByPage = new Map();
-            let serviceWorkerReady = false;
-            let pageStatus = '';
-            let cacheStatus = '';
-            let cacheInProgress = false;
-
-            function updateStatus() {
-                statusText.textContent = [pageStatus, cacheStatus].filter(Boolean).join(' | ');
-            }
-
-            async function registerServiceWorker() {
-                if (!('serviceWorker' in navigator)) {
-                    return;
-                }
-
-                try {
-                    await navigator.serviceWorker.register('/88x31/sw.js', { scope: '/88x31/' });
-                    await navigator.serviceWorker.ready;
-                    serviceWorkerReady = true;
-                } catch (error) {
-                    serviceWorkerReady = false;
-                }
-            }
 
             function getPageFromQuery() {
                 const params = new URLSearchParams(window.location.search);
@@ -116,52 +94,6 @@
                 return urls;
             }
 
-            async function getMarkdown(page) {
-                if (markdownByPage.has(page)) {
-                    return markdownByPage.get(page);
-                }
-
-                const response = await fetch(getMarkdownUrl(page), { cache: 'force-cache' });
-                if (!response.ok) {
-                    throw new Error('Failed to fetch markdown file for page ' + page + '.');
-                }
-
-                const markdown = await response.text();
-                markdownByPage.set(page, markdown);
-                return markdown;
-            }
-
-            async function postImageUrlsToServiceWorker(urls) {
-                if (!serviceWorkerReady || urls.length === 0) {
-                    return false;
-                }
-
-                const registration = await navigator.serviceWorker.ready;
-                const worker = navigator.serviceWorker.controller || registration.active || registration.waiting;
-
-                if (!worker) {
-                    return false;
-                }
-
-                for (let i = 0; i < urls.length; i += CACHE_BATCH_SIZE) {
-                    worker.postMessage({
-                        type: 'CACHE_URLS',
-                        urls: urls.slice(i, i + CACHE_BATCH_SIZE)
-                    });
-                }
-
-                return true;
-            }
-
-            function warmBrowserImageCache(urls) {
-                urls.forEach((url) => {
-                    const img = new Image();
-                    img.decoding = 'async';
-                    img.loading = 'eager';
-                    img.src = url;
-                });
-            }
-
             function renderImages(imageUrls, page) {
                 galleryGrid.innerHTML = '';
 
@@ -184,75 +116,37 @@
                 });
             }
 
-            async function cacheAllImages() {
-                if (cacheInProgress) {
-                    return;
-                }
-
-                cacheInProgress = true;
-                const allUrls = new Set();
-
-                for (let page = MIN_PAGE; page <= MAX_PAGE; page += 1) {
-                    try {
-                        const markdown = await getMarkdown(page);
-                        const urls = extractImageUrls(markdown);
-
-                        urls.forEach((url) => allUrls.add(url));
-                        cacheStatus = 'Caching images: page ' + page + '/' + MAX_PAGE;
-                        updateStatus();
-
-                        if (serviceWorkerReady) {
-                            await postImageUrlsToServiceWorker(urls);
-                        } else {
-                            warmBrowserImageCache(urls);
-                        }
-                    } catch (error) {
-                        cacheStatus = 'Caching skipped page ' + page;
-                        updateStatus();
-                    }
-                }
-
-                if (!serviceWorkerReady) {
-                    warmBrowserImageCache(Array.from(allUrls));
-                }
-
-                cacheStatus = 'Cached ' + allUrls.size + ' image URL(s).';
-                updateStatus();
-                cacheInProgress = false;
-            }
-
             async function loadPage(page) {
                 prevBtn.disabled = true;
                 nextBtn.disabled = true;
-                pageStatus = 'Loading page ' + page + '...';
-                updateStatus();
+                statusText.textContent = 'Loading...';
                 pageInput.value = String(page);
                 setPageInQuery(page);
 
                 try {
-                    const markdown = await getMarkdown(page);
+                    const response = await fetch(getMarkdownUrl(page));
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch page ' + page + '.');
+                    }
+                    const markdown = await response.text();
                     const imageUrls = extractImageUrls(markdown);
                     renderImages(imageUrls, page);
-                    pageStatus = 'Page ' + page + ' loaded with ' + imageUrls.length + ' image(s).';
-                    updateStatus();
+                    statusText.textContent = page + ' / ' + MAX_PAGE + ' — ' + imageUrls.length + ' badges';
                 } catch (error) {
                     galleryGrid.innerHTML = '';
                     const errorMessage = document.createElement('p');
                     errorMessage.className = 'error-state';
                     errorMessage.textContent = error.message;
                     galleryGrid.appendChild(errorMessage);
-                    pageStatus = 'Could not load page ' + page + '.';
-                    updateStatus();
+                    statusText.textContent = 'Could not load page ' + page + '.';
                 } finally {
                     prevBtn.disabled = page <= MIN_PAGE;
                     nextBtn.disabled = page >= MAX_PAGE;
                 }
             }
 
-            async function init() {
+            function init() {
                 let currentPage = getPageFromQuery();
-
-                await registerServiceWorker();
 
                 prevBtn.addEventListener('click', () => {
                     if (currentPage <= MIN_PAGE) return;
@@ -277,8 +171,7 @@
                     loadPage(currentPage);
                 });
 
-                await loadPage(currentPage);
-                cacheAllImages();
+                loadPage(currentPage);
             }
 
             init();

@@ -2,11 +2,17 @@
     box-sizing: border-box;
 }
 
+html,
 body {
     margin: 0;
-    font-family: "Source Code Pro", monospace;
+    padding: 0;
     background: #fff;
+}
+
+body {
+    font-family: "Source Code Pro", monospace;
     color: #111;
+    font-size: clamp(15px, 1vw, 18px);
 }
 
 .gallery-page {
@@ -32,15 +38,14 @@ body {
 button,
 input {
     font: inherit;
-    font-size: 0.9rem;
 }
 
 button {
     border: 1px solid #c8c8c8;
     background: #f0f0f0;
-    color: #111;
+    color: inherit;
     border-radius: 0;
-    padding: 2px 8px;
+    padding: 0.4rem 0.7rem;
     cursor: pointer;
 }
 
@@ -54,7 +59,7 @@ input[type="number"] {
     border: 1px solid #c8c8c8;
     border-radius: 0;
     background: #fff;
-    padding: 2px 4px;
+    padding: 0.4rem 0.4rem;
 }
 
 .gallery-grid {
