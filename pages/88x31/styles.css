@@ -23,10 +23,12 @@ body {
 
 .controls {
     display: flex;
-    flex-wrap: wrap;
-    gap: 2px;
-    align-items: center;
+    gap: 0;
     margin-bottom: 4px;
+}
+
+.controls button {
+    flex: 1;
 }
 
 button,
