@@ -18,13 +18,13 @@ body {
 .gallery-page {
     max-width: 100%;
     margin: 0;
-    padding: 10px;
+    padding: 0;
 }
 
 .controls {
     display: flex;
     gap: 0;
-    margin-bottom: 4px;
+    margin-bottom: 0;
 }
 
 .controls button {
