@@ -10,20 +10,15 @@
 
 <body>
     <main class="gallery-page">
-        <header class="page-header">
-            <h1>88x31 Gallery</h1>
-            <p id="status-text" aria-live="polite">Loading...</p>
-        </header>
-
         <section class="controls" aria-label="Pagination controls">
             <button id="prev-btn" type="button">Previous</button>
             <form id="jump-form" class="jump-form">
-                <label for="page-input">Page</label>
                 <input id="page-input" name="page" type="number" min="1" max="164" required />
                 <span>/ 164</span>
                 <button type="submit">Go</button>
             </form>
             <button id="next-btn" type="button">Next</button>
+            <p id="status-text" class="status-text" aria-live="polite">Loading...</p>
         </section>
 
         <section id="gallery-grid" class="gallery-grid" aria-label="88x31 image gallery"></section>
@@ -33,6 +28,7 @@
         (function () {
             const MIN_PAGE = 1;
             const MAX_PAGE = 164;
+            const CACHE_BATCH_SIZE = 60;
 
             const statusText = document.getElementById('status-text');
             const galleryGrid = document.getElementById('gallery-grid');
@@ -40,6 +36,30 @@
             const nextBtn = document.getElementById('next-btn');
             const pageInput = document.getElementById('page-input');
             const jumpForm = document.getElementById('jump-form');
+
+            const markdownByPage = new Map();
+            let serviceWorkerReady = false;
+            let pageStatus = '';
+            let cacheStatus = '';
+            let cacheInProgress = false;
+
+            function updateStatus() {
+                statusText.textContent = [pageStatus, cacheStatus].filter(Boolean).join(' | ');
+            }
+
+            async function registerServiceWorker() {
+                if (!('serviceWorker' in navigator)) {
+                    return;
+                }
+
+                try {
+                    await navigator.serviceWorker.register('/88x31/sw.js', { scope: '/88x31/' });
+                    await navigator.serviceWorker.ready;
+                    serviceWorkerReady = true;
+                } catch (error) {
+                    serviceWorkerReady = false;
+                }
+            }
 
             function getPageFromQuery() {
                 const params = new URLSearchParams(window.location.search);
@@ -96,6 +116,52 @@
                 return urls;
             }
 
+            async function getMarkdown(page) {
+                if (markdownByPage.has(page)) {
+                    return markdownByPage.get(page);
+                }
+
+                const response = await fetch(getMarkdownUrl(page), { cache: 'force-cache' });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch markdown file for page ' + page + '.');
+                }
+
+                const markdown = await response.text();
+                markdownByPage.set(page, markdown);
+                return markdown;
+            }
+
+            async function postImageUrlsToServiceWorker(urls) {
+                if (!serviceWorkerReady || urls.length === 0) {
+                    return false;
+                }
+
+                const registration = await navigator.serviceWorker.ready;
+                const worker = navigator.serviceWorker.controller || registration.active || registration.waiting;
+
+                if (!worker) {
+                    return false;
+                }
+
+                for (let i = 0; i < urls.length; i += CACHE_BATCH_SIZE) {
+                    worker.postMessage({
+                        type: 'CACHE_URLS',
+                        urls: urls.slice(i, i + CACHE_BATCH_SIZE)
+                    });
+                }
+
+                return true;
+            }
+
+            function warmBrowserImageCache(urls) {
+                urls.forEach((url) => {
+                    const img = new Image();
+                    img.decoding = 'async';
+                    img.loading = 'eager';
+                    img.src = url;
+                });
+            }
+
             function renderImages(imageUrls, page) {
                 galleryGrid.innerHTML = '';
 
@@ -108,52 +174,85 @@
                 }
 
                 imageUrls.forEach((url, index) => {
-                    const card = document.createElement('article');
-                    card.className = 'badge-card';
-
                     const image = document.createElement('img');
+                    image.className = 'badge-image';
                     image.src = url;
                     image.alt = '88x31 badge ' + (index + 1) + ' from page ' + page;
                     image.loading = 'lazy';
                     image.decoding = 'async';
-
-                    card.appendChild(image);
-                    galleryGrid.appendChild(card);
+                    galleryGrid.appendChild(image);
                 });
+            }
+
+            async function cacheAllImages() {
+                if (cacheInProgress) {
+                    return;
+                }
+
+                cacheInProgress = true;
+                const allUrls = new Set();
+
+                for (let page = MIN_PAGE; page <= MAX_PAGE; page += 1) {
+                    try {
+                        const markdown = await getMarkdown(page);
+                        const urls = extractImageUrls(markdown);
+
+                        urls.forEach((url) => allUrls.add(url));
+                        cacheStatus = 'Caching images: page ' + page + '/' + MAX_PAGE;
+                        updateStatus();
+
+                        if (serviceWorkerReady) {
+                            await postImageUrlsToServiceWorker(urls);
+                        } else {
+                            warmBrowserImageCache(urls);
+                        }
+                    } catch (error) {
+                        cacheStatus = 'Caching skipped page ' + page;
+                        updateStatus();
+                    }
+                }
+
+                if (!serviceWorkerReady) {
+                    warmBrowserImageCache(Array.from(allUrls));
+                }
+
+                cacheStatus = 'Cached ' + allUrls.size + ' image URL(s).';
+                updateStatus();
+                cacheInProgress = false;
             }
 
             async function loadPage(page) {
                 prevBtn.disabled = true;
                 nextBtn.disabled = true;
-                statusText.textContent = 'Loading page ' + page + '...';
+                pageStatus = 'Loading page ' + page + '...';
+                updateStatus();
                 pageInput.value = String(page);
                 setPageInQuery(page);
 
                 try {
-                    const response = await fetch(getMarkdownUrl(page), { cache: 'no-store' });
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch markdown file for page ' + page + '.');
-                    }
-
-                    const markdown = await response.text();
+                    const markdown = await getMarkdown(page);
                     const imageUrls = extractImageUrls(markdown);
                     renderImages(imageUrls, page);
-                    statusText.textContent = 'Page ' + page + ' loaded with ' + imageUrls.length + ' image(s).';
+                    pageStatus = 'Page ' + page + ' loaded with ' + imageUrls.length + ' image(s).';
+                    updateStatus();
                 } catch (error) {
                     galleryGrid.innerHTML = '';
                     const errorMessage = document.createElement('p');
                     errorMessage.className = 'error-state';
                     errorMessage.textContent = error.message;
                     galleryGrid.appendChild(errorMessage);
-                    statusText.textContent = 'Could not load page ' + page + '.';
+                    pageStatus = 'Could not load page ' + page + '.';
+                    updateStatus();
                 } finally {
                     prevBtn.disabled = page <= MIN_PAGE;
                     nextBtn.disabled = page >= MAX_PAGE;
                 }
             }
 
-            function init() {
+            async function init() {
                 let currentPage = getPageFromQuery();
+
+                await registerServiceWorker();
 
                 prevBtn.addEventListener('click', () => {
                     if (currentPage <= MIN_PAGE) return;
@@ -178,7 +277,8 @@
                     loadPage(currentPage);
                 });
 
-                loadPage(currentPage);
+                await loadPage(currentPage);
+                cacheAllImages();
             }
 
             init();
