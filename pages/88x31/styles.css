@@ -13,9 +13,11 @@ body {
     font-family: "Source Code Pro", monospace;
     color: #111;
     font-size: clamp(15px, 1vw, 18px);
+    width: 100%;
 }
 
 .gallery-page {
+    width: 100%;
     max-width: 100%;
     margin: 0;
     padding: 0;
@@ -56,6 +58,7 @@ button:disabled {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
+    justify-content: center;
     gap: 2px;
 }
 
