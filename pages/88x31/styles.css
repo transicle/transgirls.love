@@ -25,10 +25,12 @@ body {
     display: flex;
     gap: 0;
     margin-bottom: 0;
+    width: 100%;
 }
 
 .controls button {
     flex: 1;
+    padding: 1rem;
 }
 
 button,
