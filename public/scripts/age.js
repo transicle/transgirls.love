@@ -1,6 +1,6 @@
 // automatically update my age because i'm a lazy loser
 
-const birthday = new Date("2008-11-18T00:00:00");
+const birthday = new Date("2007-11-18T00:00:00");
 const age_elem = document.getElementById("age");
 
 if (age_elem)
