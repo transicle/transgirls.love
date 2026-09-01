@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <link rel="canonical" href="https://transgirls.love" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap"
+        rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="public/styles.css" />
+    <link rel="icon" type="image/png" href="/assets/favicons/trans.png" />
+
+    <title>$ echo "transgirls ♥︎"</title>
+
+    <meta name="theme-color" content="#eaeaea">
+    <meta name="description" content="lily's awesome wegbsite :3c" />
+    <meta name="robots" content="index, follow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="$ echo &quot;transgirls ♥︎&quot;">
+    <meta name="twitter:description" content="lily's awesome wegbsite :3c">
+    <meta name="twitter:image" content="https://transgirls.love/assets/favicons/trans.png">
+    <meta name="twitter:url" content="https://transgirls.love">
+    <meta name="twitter:site" content="@transicle">
+    <meta name="twitter:creator" content="@transicle">
+
+    <!-- embed stuff -->
+
+    <meta property="og:title" content="$ echo &quot;transgirls ♥︎&quot;" />
+    <meta property="og:description" content="lily's awesome wegbsite :3c" />
+    <meta property="og:image" content="https://transgirls.love/assets/favicons/trans.png" />
+    <meta property="og:image:alt" content="Image of the transgender flag." />
+    <meta property="og:image:width" content="50" />
+    <meta property="og:image:height" content="50" />
+    <meta property="og:url" content="https://transgirls.love" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="transgirls.love ♥︎" />
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "ProfilePage",
+        "url": "https://transgirls.love",
+        "name": "$ echo \"transgirls ♥︎\"",
+        "description": "lily's awesome wegbsite :3c",
+        "mainEntity": {
+            "@type": "Person",
+            "name": "lily",
+            "url": "https://transgirls.love",
+            "sameAs": [
+                "https://github.com/transicle",
+                "https://x.com/transicle",
+                "https://www.youtube.com/@transicle",
+                "https://www.roblox.com/users/3805519155/profile"
+            ]
+        }
+    }
+    </script>
+</head>
+
+<body>
+    <div class="page-layout">
+        <div class="sticker-side">
+            <nav class="social-links" aria-label="Social links">
+                <a class="social-link" href="https://github.com/transicle" target="_blank" rel="noreferrer"
+                    aria-label="GitHub">
+                    <img src="/assets/favicons/github.png" alt="GitHub" />
+                </a>
+
+                <a class="social-link" href="https://www.roblox.com/users/3805519155/profile" target="_blank"
+                    rel="noreferrer" aria-label="Roblox">
+                    <img src="/assets/favicons/roblox.png" alt="Roblox" />
+                </a>
+
+                <a class="social-link" href="https://discord.com/users/1002377371892072498" target="_blank"
+                    rel="noreferrer" aria-label="Discord">
+                    <img src="/assets/favicons/discord.png" alt="Discord" />
+                </a>
+
+                <a class="social-link" href="https://x.com/transicle" target="_blank" rel="noreferrer" aria-label="X">
+                    <img src="/assets/favicons/x.png" alt="X" />
+                </a>
+            </nav>
+
+            <p class="descriptor-line">
+                <em>agnostic</em>, <em>autism</em>, <em>aphantasia/</em>, <em>adhd</em>, <em>anxiety</em>,<br />
+                <em>depression</em>, <em><a href="https://en.wikipedia.org/wiki/Avoidant/restrictive_food_intake_disorder">arfid</a></em>
+            </p>
+
+            <div class="stickers" aria-label="Sticker grid" id="sticker-container"></div>
+
+            <a class="blog-link" href="https://blog.transgirls.love">
+                my blog :3\
+            </a>
+
+            <script>
+                const stickers_dir = "../assets/stickers/";
+                const container_id = "sticker-container";
+
+                const sticker_files = [
+                    "pokemon.gif",
+                    "hello-kitty.gif",
+                    "trans-your-gender.gif",
+                    "i-love-vscode.gif",
+                    "written-using-vi.gif",
+                    "trans-rights-now.gif",
+                    "candy-shop.gif",
+                    "free-porn.gif",
+                    "this-website-is-gay.gif",
+                    "made-for-dark-mode.gif",
+                    "8-bit-color.gif",
+                    "gay.gif",
+                    "best-viewed-with-a-browser.gif",
+                    "pls-bother-me.gif",
+                    "eat-smoke-weed-sleep-repeat.gif",
+                    "piracy-now.gif",
+                    "get-winrar.gif",
+                    "cute-anime.gif",
+                    "ublock-origin-now.gif",
+                    "powered-by-penguins.gif",
+                    "no-webp.gif",
+                    "not-perfect.gif",
+                    "free-tech-tips.gif",
+                    "lets-not-encrypt.gif",
+                    "legalize-weed.gif",
+                    "homocide-now.gif",
+                    "i-hate-macintosh.gif",
+                    "dream-diary.gif",
+                    "cheez-it.gif",
+                    "pls-view-with-eyes.gif",
+                    "anything-but-chrome.gif",
+                    "made-with-paws.gif",
+                    "queer-coded.gif",
+                    "nyan-cat.gif",
+                    "princess.gif",
+                ];
+
+                function lazy_load()
+                {
+                    const container = document.getElementById(container_id);
+
+                    if (!container)
+                    {
+                        console.error(`couldn't find element id an id="${container_id}"`);
+                        return;
+                    }
+
+                    sticker_files.forEach(file_name => {
+                        const image = document.createElement("img");
+
+                        image.src = stickers_dir + file_name;
+                        image.alt = file_name.replace(/\.[^/.]+$/, "");
+                        image.loading = "lazy";
+
+                        container.appendChild(image);
+                    });
+
+                    console.log(`loaded ${sticker_files.length} stickers`);
+                }
+
+                lazy_load();
+            </script>
+        </div>
+
+        <div class="about-side">
+            <h1 class="content-title">pawesome about me\</h1>
+
+            <p class="content-description">
+                hii i am lily, i'm <span id="age">n/a</span> years old right now and i am <i>really</i> loving philosophy,
+                programming language research, linux, and writing OSS,, my pronouns are <b>she, they</b> and i'm
+                self taught, as well as trans and kinda awesome<br><br>
+                
+                my favorite programming languages are <b>c</b>, <b>rust</b>, and <b>python</b>, but i can also
+                code in <b>javascript</b>, <b>luau</b> and <b>c++</b>!! i'm working on my own
+                programming language called <a href="https://github.com/adan-lang/ADAN">ADAN</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="public/scripts/age.js"></script>
+</body>
+
+</html>

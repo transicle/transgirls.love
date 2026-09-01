@@ -1,0 +1,141 @@
+html {
+    font-size: clamp(15px, 1vw, 18px);
+}
+
+::selection {
+    background: rgba(255, 182, 193, 0.45);
+}
+
+html,
+body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: #eaeaea;
+}
+
+body {
+    font-family: "Source Code Pro", monospace;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.page-layout {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-areas: "stickers about";
+    align-items: start;
+    justify-content: center;
+    gap: 6rem;
+    padding: 2rem;
+}
+
+.sticker-side {
+    grid-area: stickers;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    flex-shrink: 0;
+}
+
+.social-links {
+    display: flex;
+    gap: 0.625rem;
+}
+
+.social-link {
+    display: inline-flex;
+    width: 1.375rem;
+    height: 1.375rem;
+    text-decoration: none;
+}
+
+.social-link img {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.descriptor-line {
+    width: 450px;
+    margin: 0;
+    text-align: center;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    font-weight: 700;
+}
+
+.stickers {
+    display: grid;
+    grid-template-columns: repeat(5, 88px);
+    grid-auto-rows: 31px;
+    gap: 2px;
+    margin: 0 auto;
+}
+
+.stickers img {
+    display: block;
+}
+
+.blog-link {
+    color: inherit;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.blog-link:hover {
+    text-decoration: underline;
+}
+
+.scroll-note {
+    display: none;
+}
+
+.about-side {
+    grid-area: about;
+    max-width: 28rem;
+    align-self: end;
+}
+
+.content-title {
+    margin: 0 0 1rem;
+    font-size: clamp(1rem, 1.5vw, 1.45rem);
+    line-height: 1.05;
+}
+
+.content-body {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+.content-left {
+    flex: 1;
+}
+
+.content-description {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.7;
+    word-break: break-word;
+}
+
+@media (max-width: 700px) {
+    .page-layout {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "stickers"
+            "about";
+        gap: 2rem;
+        padding: 2rem 1.5rem;
+    }
+
+    .about-side {
+        max-width: 100%;
+        align-self: start;
+    }
+}
